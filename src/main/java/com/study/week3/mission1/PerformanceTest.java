@@ -6,21 +6,43 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 public class PerformanceTest {
-    private static final Runnable ioBoundRunnable = new Runnable() {
-        @Override
-        public void run() {
-            System.out.println("1) run. thread: " + Thread.currentThread());
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println("2) run. thread: " + Thread.currentThread());
-        }
 
+    static CountDownLatch latch = new CountDownLatch(10000);
+
+
+    private static void platformThreadWithIoBound() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(10000);
 
-        Runnable task = () -> {
+        Runnable task = createTask(latch);
+
+        try (ExecutorService executorService = Executors.newFixedThreadPool(100)) {
+            for (int i = 0; i < 10000; i++) {
+                executorService.submit(task);
+            }
+
+            latch.await();
+        }
+    }
+
+    private static void virtualThreadWithIoBound() {
+        CountDownLatch latch = new CountDownLatch(10000);
+
+        Runnable task = createTask(latch);
+
+        ThreadFactory factory = Thread.ofVirtual().name("myVirtual-", 0).factory();
+        try (ExecutorService executorService = Executors.newThreadPerTaskExecutor(factory)) {
+            for (int i = 0; i < 10000; i++) {
+                executorService.submit(task);
+            }
+
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Runnable createTask(CountDownLatch latch) {
+        return () -> {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -29,26 +51,9 @@ public class PerformanceTest {
                 latch.countDown();
             }
         };
-    };
-
-    private static void platformThreadWithIoBound() {
-        try (ExecutorService executorService = Executors.newFixedThreadPool(10000)) {
-            for (int i = 0; i < 10000; i++) {
-                executorService.submit(ioBoundRunnable);
-            }
-        }
     }
 
-    private static void virtualThreadWithIoBound() {
-        ThreadFactory factory = Thread.ofVirtual().name("myVirtual-", 0).factory();
-        try (ExecutorService executorService = Executors.newThreadPerTaskExecutor(factory)) {
-            for (int i = 0; i < 10000; i++) {
-                executorService.submit(ioBoundRunnable);
-            }
-        }
-    }
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         System.out.println("platformThread start...");
         System.out.println("==========================");
