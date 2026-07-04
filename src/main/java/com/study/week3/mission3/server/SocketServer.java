@@ -20,7 +20,7 @@ public class SocketServer {
 
             Thread.startVirtualThread(
                     new ClientHandler(socket)
-            ).start();
+            );
         }
     }
 

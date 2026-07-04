@@ -37,13 +37,13 @@ public class ClientMain {
 
             while (true) {
                 System.out.print("\n> ");
-                String message = consoleReader.readLine();
+                String message = consoleReader.readLine(); // 사용자 입력
 
                 if (message == null || message.equalsIgnoreCase("exit")) {
                     break;
                 }
 
-                serverWriter.write(message);
+                serverWriter.write(message); // 서버로 전송
                 serverWriter.newLine();
                 serverWriter.flush();
             }
