@@ -14,13 +14,7 @@ public class TopKSearcher {
 
     public SearchResult[] search (float[] query, float[][] docs, int top){
 
-        PriorityQueue<SearchResult> queue = new PriorityQueue<>(new Comparator<SearchResult>() {
-            @Override
-            public int compare(SearchResult o1, SearchResult o2) {
-                return Integer.compare(o1.getScore(), o2.getScore()) ;
-            }
-        });
-
+        PriorityQueue<SearchResult> queue = new PriorityQueue<>(new SearchComparator());
 
         for (int i = 0; i < docs.length; i++) {
 
