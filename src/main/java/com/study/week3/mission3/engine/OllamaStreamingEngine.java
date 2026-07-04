@@ -28,7 +28,7 @@ public class OllamaStreamingEngine implements StreamingAIEngine {
             Map<String, Object> requestBody = Map.of(
                     "model", model,
                     "prompt", message,
-                    "stream", true
+                    "stream", true // full response 를 기다리는 형식이 아닌 생성되는 조각을 즉시 받아옴.
             );
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
@@ -41,7 +41,7 @@ public class OllamaStreamingEngine implements StreamingAIEngine {
 
             HttpResponse<InputStream> response = client.send(
                     request,
-                    HttpResponse.BodyHandlers.ofInputStream()
+                    HttpResponse.BodyHandlers.ofInputStream() //응답을 스트림으로 받아서 도착하는 데이터를 계속 읽어오게 함.
             );
 
             try (BufferedReader reader = new BufferedReader(
