@@ -1,8 +1,10 @@
 package com.study.week3.mission1.search;
 
+import com.study.week3.mission1.model.VectorDocument;
 import com.study.week3.mission1.similarity.CosineSimilarity;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class TopKSearcher {
@@ -12,22 +14,28 @@ public class TopKSearcher {
         this.cosineSimilarity = cosineSimilarity;
     }
 
-    public SearchResult[] search (float[] query, float[][] docs, int top){
+    public void search (float[] query, List<VectorDocument> docs, int top) {
 
-        PriorityQueue<SearchResult> queue = new PriorityQueue<>(new SearchComparator());
+        PriorityQueue<SearchResult> queue =
+                new PriorityQueue<>((a, b) -> Float.compare(a.getScore(), b.getScore()));
 
-        for (int i = 0; i < docs.length; i++) {
+        for (VectorDocument doc : docs) {
+            float compare = cosineSimilarity.compare(query, doc.getVector());
+            SearchResult result = new SearchResult(doc.getId(), compare);
 
-            int compare = cosineSimilarity.compare(query, docs[i]);
-            SearchResult result = new SearchResult(i, compare);
+            queue.add(result);
 
-            if (query.length!=5)
-                queue.add(result);
-            else {
+            if (queue.size() > top) {
+                queue.poll(); // 가장 낮은 점수 제거
             }
         }
 
+        List<SearchResult> results = new ArrayList<>(queue);
+        results.sort((a, b) -> Float.compare(b.getScore(), a.getScore()));
 
-        return null;
+        for (SearchResult result : results) {
+            System.out.println("documentId : " + result.getDocumentId()
+                    + ", score : " + result.getScore());
+        }
     }
 }

@@ -8,4 +8,13 @@ public class VectorDocument {
         this.id = id;
         this.vector = vector;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public float[] getVector() {
+        return vector;
+    }
+
 }

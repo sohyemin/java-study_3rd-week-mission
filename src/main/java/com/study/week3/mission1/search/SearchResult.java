@@ -2,14 +2,18 @@ package com.study.week3.mission1.search;
 
 public class SearchResult {
     private final int documentId;
-    private final int score;
+    private final float score;
 
-    public SearchResult(int documentId, int score) {
+    public SearchResult(int documentId, float score) {
         this.documentId = documentId;
         this.score = score;
     }
 
-    public int getScore() {
+    public float getScore() {
         return score;
+    }
+
+    public int getDocumentId() {
+        return documentId;
     }
 }

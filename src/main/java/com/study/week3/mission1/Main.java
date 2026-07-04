@@ -1,6 +1,7 @@
 package com.study.week3.mission1;
 
 import com.study.week3.mission1.model.VectorDocument;
+import com.study.week3.mission1.search.SearchResult;
 import com.study.week3.mission1.search.TopKSearcher;
 import com.study.week3.mission1.similarity.CosineSimilarity;
 
@@ -23,7 +24,7 @@ public class Main {
                 new VectorDocument(5, new float[]{2f, 0f})
         );
 
-
+        searcher.search(query, documents, 5);
 
     }
 }
